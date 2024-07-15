@@ -4,8 +4,15 @@
 \alias{get_joint_scores}
 \title{Computes the joint scores.}
 \usage{
-get_joint_scores(blocks, block_svd, initial_signal_ranks, sv_thresholds,
-  n_wedin_samples = 1000, n_rand_dir_samples = 1000, joint_rank = NA)
+get_joint_scores(
+  blocks,
+  block_svd,
+  initial_signal_ranks,
+  sv_thresholds,
+  n_wedin_samples = 1000,
+  n_rand_dir_samples = 1000,
+  joint_rank = NA
+)
 }
 \arguments{
 \item{blocks}{List. A list of the data matrices.}
@@ -14,17 +21,22 @@ get_joint_scores(blocks, block_svd, initial_signal_ranks, sv_thresholds,
 
 \item{initial_signal_ranks}{Numeric vector. Initial signal ranks estimates.}
 
-\item{sv_thresholds}{Numeric vector. The singular value thresholds from the initial signal rank estimates.}
+\item{sv_thresholds}{Numeric vector. The singular value thresholds from the
+initial signal rank estimates.}
 
-\item{n_wedin_samples}{Integer. Number of wedin bound samples to draw for each data matrix.}
+\item{n_wedin_samples}{Integer. Number of wedin bound samples to draw for
+each data matrix.}
 
-\item{n_rand_dir_samples}{Integer. Number of random direction bound samples to draw.}
+\item{n_rand_dir_samples}{Integer. Number of random direction bound samples
+to draw.}
 
-\item{joint_rank}{Integer or NA. User specified joint_rank. If NA will be estimated from data.}
+\item{joint_rank}{Integer or NA. User specified joint_rank. If NA will be
+estimated from data.}
 }
 \value{
 Matrix. The joint scores.
 }
 \description{
-Estimate the joint rank with the wedin bound, compute the signal scores SVD, double check each joint component.
+Estimate the joint rank with the wedin bound, compute the signal scores SVD,
+double check each joint component.
 }

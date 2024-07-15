@@ -2,80 +2,105 @@
 #'
 #' Computes the JIVE decomposition.
 #'
-#' @param blocks List. A list of the data matrices.
-#' @param initial_signal_ranks Vector. The initial signal rank estimates.
-#' @param full Boolean. Whether or not to store the full J, I, E matrices or just their SVDs (set to FALSE to save memory).
-#' @param n_wedin_samples Integer. Number of wedin bound samples to draw for each data matrix.
-#' @param n_rand_dir_samples Integer. Number of random direction bound samples to draw.
-#' @param joint_rank Integer or NA. User specified joint_rank. If NA will be estimated from data.
+#' @param blocks A list of numeric matrices with same number of rows specifying
+#'   the data blocks to be analyzed.
+#' @param initial_signal_ranks An integer vector specifying the initial ranks
+#'   for the signal matrices.
+#' @param full A boolean specifying whether to store the full J, I and E
+#'   matrices or solely their SVDs. Defaults to `TRUE`. Set to `FALSE` to save
+#'   memory.
+#' @param n_wedin_samples An integer value specifying the number of Wedin bound
+#'   samples to draw. Defaults to `100L`.
+#' @param n_rand_dir_samples An integer value specifying the number of random
+#'   direction bound samples to draw. Defaults to `100L`.
+#' @param joint_rank An integer valye specifying the rank of the joint space.
+#'   Defaults to `NA` in which case it is estimated from the data.
+#' @param joint_scores blabla. Defaults to `NULL` in which case they are
+#'   estimated from the data.
 
-#' @return The JIVE decomposition.
+#' @return A list containing the estimated JIVE decomposition. The list contains
+#'  the following elements:
+#'  - `joint_scores` A list of joint scores for each block.
+#'  - `individual_scores` A list of individual scores for each block.
+#'  - `joint` A list containing the joint decomposition.
+#'  - `individual` A list containing the individual decomposition.
+#'  - `noise` A list containing the noise decomposition.
+#'  - `joint_rank` An integer specifying the rank of the joint space.
+#'  - `individual_rank` A list of integers specifying the rank of the individual
+#'  spaces.
+#'  - `noise_rank` A list of integers specifying the rank of the noise spaces.
 #'
+#' @export
 #' @examples
-#' blocks <- sample_toy_data(n=200, dx=100, dy=500)
-#' initial_signal_ranks <- c(2, 2)
+#' blocks <- sample_toy_data(n = 200, dx = 100, dy = 500)
+#' initial_signal_ranks <- c(2L, 2L)
 #' jive_decomp <- ajive(blocks, initial_signal_ranks)
 #'
 #' joint_scores <- jive_decomp[['joint_scores']]
-#' J_1 <- jive_decomp[[1]][['joint']][['full']]
-#' U_individual_2 <- jive_decomp[[2]][['individual']][['u']]
-#' individual_rank_2 <- jive_decomp[[2]][['individual']][['rank']]
-#'
-#' @export
-ajive <- function(blocks, initial_signal_ranks, full=TRUE, n_wedin_samples=1000, n_rand_dir_samples=1000, joint_rank=NA){
-
+#' J_1 <- jive_decomp$block_decomps[[1]][['joint']][['full']]
+#' U_individual_2 <- jive_decomp$block_decomps[[2]][['individual']][['u']]
+#' individual_rank_2 <- jive_decomp$block_decomps[[2]][['individual']][['rank']]
+ajive <- function(blocks,
+                  initial_signal_ranks,
+                  full = TRUE,
+                  n_wedin_samples = 100L,
+                  n_rand_dir_samples = 100L,
+                  joint_rank = NA,
+                  joint_scores = NULL) {
     K <- length(blocks)
 
-    if(K < 2){
-        stop('ajive expects at least two data matrices.')
-    }
+    if (K < 2) cli::cli_abort("`ajive` expects at least two data matrices.")
 
-    if(sum(sapply(blocks,function(X) any(is.na(X)))) > 0){
-        stop('Some of the blocks has missing data -- ajive expects full data matrices.')
-    }
+    if (sum(sapply(blocks, anyNA)) > 0)
+        cli::cli_abort("Some of the blocks has missing data -- ajive expects full data matrices.")
 
-    # TODO: should we give the option to center the data?
-    # if(center){
-    #     blocks <- lapply(blocks,function(X) scale(X, center=T, scale=FALSE))
-    # }
+    # blocks <- lapply(blocks, scale)
 
     # step 1: initial signal space extraction --------------------------------
     # initial estimate of signal space with SVD
 
     block_svd <- list()
     sv_thresholds <- rep(0, K)
-    for(k in 1:K){
-
+    for (k in 1:K) {
         block_svd[[k]] <- get_svd(blocks[[k]])
-
-        sv_thresholds[k] <- get_sv_threshold(singular_values = block_svd[[k]][['d']],
-                                               rank=initial_signal_ranks[k])
-
+        sv_thresholds[k] <- get_sv_threshold(
+            singular_values = block_svd[[k]][['d']],
+            rank = initial_signal_ranks[k]
+        )
     }
-
 
     # step 2: joint sapce estimation -------------------------------------------------------------
 
-    out <- get_joint_scores(blocks, block_svd, initial_signal_ranks, sv_thresholds,
-                            n_wedin_samples=n_wedin_samples,
-                            n_rand_dir_samples=n_rand_dir_samples,
-                            joint_rank=joint_rank)
-    joint_rank_sel_results <- out$rank_sel_results
-    joint_scores <- out$joint_scores
-
-    joint_rank <- out[['rank_sel_results']][['joint_rank_estimate']] # dim(joint_scores)[2]
-
+    if (is.null(joint_scores)) {
+        out <- get_joint_scores(
+            blocks = blocks,
+            block_svd = block_svd,
+            initial_signal_ranks = initial_signal_ranks,
+            sv_thresholds = sv_thresholds,
+            n_wedin_samples = n_wedin_samples,
+            n_rand_dir_samples = n_rand_dir_samples,
+            joint_rank = joint_rank
+        )
+        joint_rank_sel_results <- out$rank_sel_results
+        joint_scores <- out$joint_scores
+        joint_rank <- out[['rank_sel_results']][['joint_rank_estimate']]
+    } else {
+        joint_rank_sel_results <- NULL
+        joint_rank <- dim(joint_scores)[2]
+    }
 
     # step 3: final decomposition -----------------------------------------------------
 
     block_decomps <- list()
-    for(k in 1:K){
-        block_decomps[[k]] <- get_final_decomposition(X=blocks[[k]],
-                                                      joint_scores=joint_scores,
-                                                      sv_threshold=sv_thresholds[k])
+    for (k in 1:K) {
+        block_decomps[[k]] <- get_final_decomposition(
+            X = blocks[[k]],
+            joint_scores = joint_scores,
+            sv_threshold = sv_thresholds[k]
+        )
     }
 
-    jive_decomposition <- list(block_decomps=block_decomps)
+    jive_decomposition <- list(block_decomps = block_decomps)
     jive_decomposition[['joint_scores']] <- joint_scores
     jive_decomposition[['joint_rank']] <- joint_rank
 
@@ -85,33 +110,40 @@ ajive <- function(blocks, initial_signal_ranks, full=TRUE, n_wedin_samples=1000,
 
 #' The singular value threshold.
 #'
-#' Computes the singluar value theshold for the data matrix (half way between the rank and rank + 1 singluar value).
+#' Computes the singluar value theshold for the data matrix (half way between
+#' the rank and rank + 1 singluar value).
 #'
 #' @param singular_values Numeric. The singular values.
 #' @param rank Integer. The rank of the approximation.
-get_sv_threshold <- function(singular_values, rank){
-
+get_sv_threshold <- function(singular_values, rank) {
     .5 * (singular_values[rank] + singular_values[rank + 1])
 }
 
 #' Computes the joint scores.
 #'
-#' Estimate the joint rank with the wedin bound, compute the signal scores SVD, double check each joint component.
+#' Estimate the joint rank with the wedin bound, compute the signal scores SVD,
+#' double check each joint component.
 #'
 #' @param blocks List. A list of the data matrices.
 #' @param block_svd List. The SVD of the data blocks.
 #' @param initial_signal_ranks Numeric vector. Initial signal ranks estimates.
-#' @param sv_thresholds Numeric vector. The singular value thresholds from the initial signal rank estimates.
-#' @param n_wedin_samples Integer. Number of wedin bound samples to draw for each data matrix.
-#' @param n_rand_dir_samples Integer. Number of random direction bound samples to draw.
-#' @param joint_rank Integer or NA. User specified joint_rank. If NA will be estimated from data.
+#' @param sv_thresholds Numeric vector. The singular value thresholds from the
+#'   initial signal rank estimates.
+#' @param n_wedin_samples Integer. Number of wedin bound samples to draw for
+#'   each data matrix.
+#' @param n_rand_dir_samples Integer. Number of random direction bound samples
+#'   to draw.
+#' @param joint_rank Integer or NA. User specified joint_rank. If NA will be
+#'   estimated from data.
 #'
 #' @return Matrix. The joint scores.
-get_joint_scores <- function(blocks, block_svd, initial_signal_ranks, sv_thresholds,
-                             n_wedin_samples=1000, n_rand_dir_samples=1000,
-                             joint_rank=NA){
-
-
+get_joint_scores <- function(blocks,
+                             block_svd,
+                             initial_signal_ranks,
+                             sv_thresholds,
+                             n_wedin_samples = 1000,
+                             n_rand_dir_samples = 1000,
+                             joint_rank = NA) {
     if(is.na(n_wedin_samples) & is.na(n_rand_dir_samples) & is.na(joint_rank)){
         stop('at least one of n_wedin_samples, n_rand_dir_samples, or joint_rank must not be NA',
              call.=FALSE)
@@ -128,7 +160,6 @@ get_joint_scores <- function(blocks, block_svd, initial_signal_ranks, sv_thresho
 
     M <- do.call(cbind, signal_scores)
     M_svd <- get_svd(M, rank=min(initial_signal_ranks))
-
 
     # estimate joint rank with wedin bound and random direction bound -------------------------------------------------------------
 
@@ -150,7 +181,7 @@ get_joint_scores <- function(blocks, block_svd, initial_signal_ranks, sv_thresho
             }
 
             wedin_samples <-  K - colSums(block_wedin_samples)
-            wedin_svsq_threshold <- quantile(wedin_samples, .05)
+            wedin_svsq_threshold <- stats::quantile(wedin_samples, .05)
 
             rank_sel_results[['wedin']] <- list(block_wedin_samples=block_wedin_samples,
                                                 wedin_samples=wedin_samples,
@@ -163,7 +194,7 @@ get_joint_scores <- function(blocks, block_svd, initial_signal_ranks, sv_thresho
         if(!is.na(n_rand_dir_samples)){
 
             rand_dir_samples <- get_random_direction_bound(n_obs=n_obs, dims=initial_signal_ranks, num_samples=n_rand_dir_samples)
-            rand_dir_svsq_threshold <- quantile(rand_dir_samples, .95)
+            rand_dir_svsq_threshold <- stats::quantile(rand_dir_samples, .95)
 
             rank_sel_results[['rand_dir']] <- list(rand_dir_samples=rand_dir_samples,
                                                    rand_dir_svsq_threshold=rand_dir_svsq_threshold)
@@ -254,7 +285,7 @@ get_final_decomposition <- function(X, joint_scores, sv_threshold, full=TRUE){
 #' @param full Boolean. Do we compute the full J, I matrices or just the SVD (set to FALSE to save memory).
 get_individual_decomposition <- function(X, joint_scores, sv_threshold, full=TRUE){
 
-    if(is.na(joint_scores)){
+    if(any(is.na(joint_scores))) {
         indiv_decomposition <- get_svd(X)
     } else{
         X_orthog <- (diag(dim(X)[1]) - joint_scores %*% t(joint_scores)) %*% X
@@ -284,7 +315,7 @@ get_individual_decomposition <- function(X, joint_scores, sv_threshold, full=TRU
 #' @param full Boolean. Do we compute the full J, I matrices or just the SVD (set to FALSE to save memory).
 get_joint_decomposition <- function(X, joint_scores, full=TRUE){
 
-    if(is.na(joint_scores)){
+    if(any(is.na(joint_scores))) {
         joint_decomposition <- list(full= NA, rank=0, u=NA, d=NA, v=NA)
         return(joint_decomposition)
     }

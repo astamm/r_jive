@@ -6,6 +6,5 @@
 #' @section Foo functions:
 #' The foo functions ...
 #'
-#' @docType package
 #' @name ajive
-NULL
+"_PACKAGE"

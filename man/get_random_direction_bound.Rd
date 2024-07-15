@@ -7,11 +7,11 @@
 get_random_direction_bound(n_obs, dims, num_samples = 1000)
 }
 \arguments{
+\item{n_obs}{The number of observations.}
+
+\item{dims}{The number of features in each data matrix}
+
 \item{num_samples}{Integer. Number of vectors selected for resampling procedure.}
-
-\item{n_obs.}{The number of observations.}
-
-\item{n_features.}{The number of features in each data matrix}
 }
 \value{
 rand_dir_samples

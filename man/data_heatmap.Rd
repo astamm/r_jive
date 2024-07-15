@@ -4,8 +4,7 @@
 \alias{data_heatmap}
 \title{Heatmap of a single data matrix.}
 \usage{
-data_heatmap(data, show_color_bar = TRUE, title = "", xlab = "",
-  ylab = "")
+data_heatmap(data, show_color_bar = TRUE, title = "", xlab = "", ylab = "")
 }
 \arguments{
 \item{data}{Matrix. The data matrix to plot.}

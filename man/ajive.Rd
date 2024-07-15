@@ -2,28 +2,55 @@
 % Please edit documentation in R/ajive.R, R/ajive_decomposition.R
 \docType{package}
 \name{ajive}
-\alias{ajive}
 \alias{ajive-package}
+\alias{ajive}
 \title{ajive: Angle based Joint and Individual Variation Explained.}
 \usage{
-ajive(blocks, initial_signal_ranks, full = TRUE,
-  n_wedin_samples = 1000, n_rand_dir_samples = 1000, joint_rank = NA)
+ajive(
+  blocks,
+  initial_signal_ranks,
+  full = TRUE,
+  n_wedin_samples = 100L,
+  n_rand_dir_samples = 100L,
+  joint_rank = NA,
+  joint_scores = NULL
+)
 }
 \arguments{
-\item{blocks}{List. A list of the data matrices.}
+\item{blocks}{A list of numeric matrices with same number of rows specifying
+the data blocks to be analyzed.}
 
-\item{initial_signal_ranks}{Vector. The initial signal rank estimates.}
+\item{initial_signal_ranks}{An integer vector specifying the initial ranks
+for the signal matrices.}
 
-\item{full}{Boolean. Whether or not to store the full J, I, E matrices or just their SVDs (set to FALSE to save memory).}
+\item{full}{A boolean specifying whether to store the full J, I and E
+matrices or solely their SVDs. Defaults to `TRUE`. Set to `FALSE` to save
+memory.}
 
-\item{n_wedin_samples}{Integer. Number of wedin bound samples to draw for each data matrix.}
+\item{n_wedin_samples}{An integer value specifying the number of Wedin bound
+samples to draw. Defaults to `100L`.}
 
-\item{n_rand_dir_samples}{Integer. Number of random direction bound samples to draw.}
+\item{n_rand_dir_samples}{An integer value specifying the number of random
+direction bound samples to draw. Defaults to `100L`.}
 
-\item{joint_rank}{Integer or NA. User specified joint_rank. If NA will be estimated from data.}
+\item{joint_rank}{An integer valye specifying the rank of the joint space.
+Defaults to `NA` in which case it is estimated from the data.}
+
+\item{joint_scores}{blabla. Defaults to `NULL` in which case they are
+estimated from the data.}
 }
 \value{
-The JIVE decomposition.
+A list containing the estimated JIVE decomposition. The list contains
+ the following elements:
+ - `joint_scores` A list of joint scores for each block.
+ - `individual_scores` A list of individual scores for each block.
+ - `joint` A list containing the joint decomposition.
+ - `individual` A list containing the individual decomposition.
+ - `noise` A list containing the noise decomposition.
+ - `joint_rank` An integer specifying the rank of the joint space.
+ - `individual_rank` A list of integers specifying the rank of the individual
+ spaces.
+ - `noise_rank` A list of integers specifying the rank of the noise spaces.
 }
 \description{
 The ajive package provides functions to do:
@@ -37,13 +64,16 @@ The foo functions ...
 }
 
 \examples{
-blocks <- sample_toy_data(n=200, dx=100, dy=500)
-initial_signal_ranks <- c(2, 2)
+blocks <- sample_toy_data(n = 200, dx = 100, dy = 500)
+initial_signal_ranks <- c(2L, 2L)
 jive_decomp <- ajive(blocks, initial_signal_ranks)
 
 joint_scores <- jive_decomp[['joint_scores']]
-J_1 <- jive_decomp[[1]][['joint']][['full']]
-U_individual_2 <- jive_decomp[[2]][['individual']][['u']]
-individual_rank_2 <- jive_decomp[[2]][['individual']][['rank']]
+J_1 <- jive_decomp$block_decomps[[1]][['joint']][['full']]
+U_individual_2 <- jive_decomp$block_decomps[[2]][['individual']][['u']]
+individual_rank_2 <- jive_decomp$block_decomps[[2]][['individual']][['rank']]
+}
+\author{
+\strong{Maintainer}: Iain Carmichael \email{idc9@cornell.edu}
 
 }

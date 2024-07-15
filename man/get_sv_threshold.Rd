@@ -12,5 +12,6 @@ get_sv_threshold(singular_values, rank)
 \item{rank}{Integer. The rank of the approximation.}
 }
 \description{
-Computes the singluar value theshold for the data matrix (half way between the rank and rank + 1 singluar value).
+Computes the singluar value theshold for the data matrix (half way between
+the rank and rank + 1 singluar value).
 }

@@ -4,8 +4,13 @@
 \alias{sample_toy_data}
 \title{Samples toy two block JIVE data.}
 \usage{
-sample_toy_data(n = 200, dx = 100, dy = 500, sigma = 0.5,
-  only_observations = TRUE)
+sample_toy_data(
+  n = 200,
+  dx = 100,
+  dy = 500,
+  sigma = 0.5,
+  only_observations = TRUE
+)
 }
 \arguments{
 \item{n}{Integer. Number of observations. Must be divisible by 20.}

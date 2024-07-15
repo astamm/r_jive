@@ -1,13 +1,14 @@
+#' Estimates the Wedin bound for a data matrix with the resampling procedure.
 #'
-#' Esimates the wedin bound for a data matrix with the resampling procedure.
-#'
-#' returns min(max(||E tilde{V}||, ||E^T tilde{U}||) / sigma_min(widetilde{A}), 1) from equation (7)
+#' Returns \eqn{\min(\max(\| E \tilde{V} \|, \|E^\top \tilde{U}\|) / \sigma_{\min(\widetilde{A}),
+#' 1)}} from equation (7).
 #'
 #' @param X Matrix. The data matrix.
 #' @param SVD List. The SVD decomposition of X.
 #' @param signal_rank Integer. The estimated signal rank of X.
+#' @param num_samples Integer. Number of vectors selected for resampling procedure.
 #'
-#' @return The the wedin bound samples.
+#' @return The wedin bound samples.
 get_wedin_bound_samples <- function(X, SVD, signal_rank, num_samples=1000){
 
     # resample for U and V

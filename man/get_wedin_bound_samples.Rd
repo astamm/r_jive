@@ -2,7 +2,7 @@
 % Please edit documentation in R/wedin_bound.R
 \name{get_wedin_bound_samples}
 \alias{get_wedin_bound_samples}
-\title{Esimates the wedin bound for a data matrix with the resampling procedure.}
+\title{Estimates the Wedin bound for a data matrix with the resampling procedure.}
 \usage{
 get_wedin_bound_samples(X, SVD, signal_rank, num_samples = 1000)
 }
@@ -12,10 +12,13 @@ get_wedin_bound_samples(X, SVD, signal_rank, num_samples = 1000)
 \item{SVD}{List. The SVD decomposition of X.}
 
 \item{signal_rank}{Integer. The estimated signal rank of X.}
+
+\item{num_samples}{Integer. Number of vectors selected for resampling procedure.}
 }
 \value{
-The the wedin bound samples.
+The wedin bound samples.
 }
 \description{
-returns min(max(||E tilde{V}||, ||E^T tilde{U}||) / sigma_min(widetilde{A}), 1) from equation (7)
+Returns \eqn{\min(\max(\| E \tilde{V} \|, \|E^\top \tilde{U}\|) / \sigma_{\min(\widetilde{A}),
+1)}} from equation (7).
 }

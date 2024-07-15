@@ -2,12 +2,11 @@
 #'
 #' Samples from the random direction bound. Returns on the scale of squared singular value.
 #'
-#' @param n_obs. The number of observations.
-#' @param n_features. The number of features in each data matrix
+#' @param n_obs The number of observations.
+#' @param dims The number of features in each data matrix
 #' @param num_samples Integer. Number of vectors selected for resampling procedure.
 #'
 #' @return rand_dir_samples
-#'
 get_random_direction_bound <- function(n_obs, dims, num_samples=1000){
 
     n_blocks <- length(dims)
