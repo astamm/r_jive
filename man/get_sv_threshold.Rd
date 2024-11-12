@@ -7,11 +7,11 @@
 get_sv_threshold(singular_values, rank)
 }
 \arguments{
-\item{singular_values}{Numeric. The singular values.}
+\item{singular_values}{A numeric vector specifying the singular values.}
 
-\item{rank}{Integer. The rank of the approximation.}
+\item{rank}{An integer value specifying the rank of the approximation.}
 }
 \description{
-Computes the singluar value theshold for the data matrix (half way between
-the rank and rank + 1 singluar value).
+Computes the singular value threshold for the data matrix (half way between
+the rank and rank + 1 singular value).
 }

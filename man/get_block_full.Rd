@@ -14,7 +14,7 @@ get_block_full(ajive_output, k, type)
 \item{type}{String. type is either 'joint', 'individual' or 'noise'.}
 }
 \value{
-A matrix of dimension equal to the dim(block[[k]]).
+A matrix of dimension equal to the \code{dim(block[[k]])}.
 }
 \description{
 get_block_full returns one of J, I or E.

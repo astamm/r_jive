@@ -25,7 +25,7 @@ sample_toy_data(
 }
 \value{
 A list of length 2 with the sampled data.
-    Each list contains: obs, joint, individual, and noise.
+Each list contains: obs, joint, individual, and noise.
 }
 \description{
 \code{sample_toy_data} samples the two block distribution from AJIVE figure 2.

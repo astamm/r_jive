@@ -9,32 +9,34 @@ get_joint_scores(
   block_svd,
   initial_signal_ranks,
   sv_thresholds,
-  n_wedin_samples = 1000,
-  n_rand_dir_samples = 1000,
+  n_wedin_samples = 100L,
+  n_rand_dir_samples = 100L,
   joint_rank = NA
 )
 }
 \arguments{
-\item{blocks}{List. A list of the data matrices.}
+\item{blocks}{A list of numeric matrices with same number \eqn{N} of rows
+specifying the data blocks to be analyzed.}
 
-\item{block_svd}{List. The SVD of the data blocks.}
+\item{block_svd}{A list of lists specifying the SVDs of each data block.}
 
-\item{initial_signal_ranks}{Numeric vector. Initial signal ranks estimates.}
+\item{initial_signal_ranks}{An integer vector specifying the initial ranks
+for the signal matrices.}
 
-\item{sv_thresholds}{Numeric vector. The singular value thresholds from the
-initial signal rank estimates.}
+\item{sv_thresholds}{A numeric vector specifying the singular value
+thresholds from the initial signal rank estimates.}
 
-\item{n_wedin_samples}{Integer. Number of wedin bound samples to draw for
-each data matrix.}
+\item{n_wedin_samples}{An integer value specifying the number of Wedin bound
+samples to draw. Defaults to \code{100L}.}
 
-\item{n_rand_dir_samples}{Integer. Number of random direction bound samples
-to draw.}
+\item{n_rand_dir_samples}{An integer value specifying the number of random
+direction bound samples to draw. Defaults to \code{100L}.}
 
-\item{joint_rank}{Integer or NA. User specified joint_rank. If NA will be
-estimated from data.}
+\item{joint_rank}{An integer valye specifying the rank of the joint space.
+Defaults to \code{NA} in which case it is estimated from the data.}
 }
 \value{
-Matrix. The joint scores.
+A numeric matrix of size \eqn{N \times r_J} storing the joint scores.
 }
 \description{
 Estimate the joint rank with the wedin bound, compute the signal scores SVD,

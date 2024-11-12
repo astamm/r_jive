@@ -9,11 +9,14 @@ get_final_decomposition(X, joint_scores, sv_threshold, full = TRUE)
 \arguments{
 \item{X}{Matrix. The original data matrix.}
 
-\item{joint_scores}{Matrix. The basis of the joint space (dimension n x joint_rank).}
+\item{joint_scores}{Matrix. The basis of the joint space (dimension n x
+joint_rank).}
 
-\item{sv_threshold}{Numeric vector. The singular value thresholds from the initial signal rank estimates.}
+\item{sv_threshold}{Numeric vector. The singular value thresholds from the
+initial signal rank estimates.}
 
-\item{full}{Boolean. Do we compute the full J, I matrices or just the SVDs (set to FALSE to save memory)..}
+\item{full}{Boolean. Do we compute the full J, I matrices or just the SVDs
+(set to FALSE to save memory).}
 }
 \description{
 Computes X = J + I + E for a single data block and the respective SVDs.

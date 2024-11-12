@@ -6,7 +6,7 @@
 #' @param k Integer. Which block.
 #' @param type String. type is either 'joint', 'individual' or 'noise'.
 #'
-#' @return A matrix of dimension equal to the dim(block[[k]]).
+#' @return A matrix of dimension equal to the `dim(block[[k]])`.
 #'
 #' @export
 get_block_full <- function(ajive_output, k, type){

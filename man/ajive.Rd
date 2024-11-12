@@ -17,40 +17,42 @@ ajive(
 )
 }
 \arguments{
-\item{blocks}{A list of numeric matrices with same number of rows specifying
-the data blocks to be analyzed.}
+\item{blocks}{A list of numeric matrices with same number \eqn{N} of rows
+specifying the data blocks to be analyzed.}
 
 \item{initial_signal_ranks}{An integer vector specifying the initial ranks
 for the signal matrices.}
 
 \item{full}{A boolean specifying whether to store the full J, I and E
-matrices or solely their SVDs. Defaults to `TRUE`. Set to `FALSE` to save
+matrices or solely their SVDs. Defaults to \code{TRUE}. Set to \code{FALSE} to save
 memory.}
 
 \item{n_wedin_samples}{An integer value specifying the number of Wedin bound
-samples to draw. Defaults to `100L`.}
+samples to draw. Defaults to \code{100L}.}
 
 \item{n_rand_dir_samples}{An integer value specifying the number of random
-direction bound samples to draw. Defaults to `100L`.}
+direction bound samples to draw. Defaults to \code{100L}.}
 
 \item{joint_rank}{An integer valye specifying the rank of the joint space.
-Defaults to `NA` in which case it is estimated from the data.}
+Defaults to \code{NA} in which case it is estimated from the data.}
 
-\item{joint_scores}{blabla. Defaults to `NULL` in which case they are
+\item{joint_scores}{blabla. Defaults to \code{NULL} in which case they are
 estimated from the data.}
 }
 \value{
 A list containing the estimated JIVE decomposition. The list contains
- the following elements:
- - `joint_scores` A list of joint scores for each block.
- - `individual_scores` A list of individual scores for each block.
- - `joint` A list containing the joint decomposition.
- - `individual` A list containing the individual decomposition.
- - `noise` A list containing the noise decomposition.
- - `joint_rank` An integer specifying the rank of the joint space.
- - `individual_rank` A list of integers specifying the rank of the individual
- spaces.
- - `noise_rank` A list of integers specifying the rank of the noise spaces.
+the following elements:
+\itemize{
+\item \code{joint_scores} A list of joint scores for each block.
+\item \code{individual_scores} A list of individual scores for each block.
+\item \code{joint} A list containing the joint decomposition.
+\item \code{individual} A list containing the individual decomposition.
+\item \code{noise} A list containing the noise decomposition.
+\item \code{joint_rank} An integer specifying the rank of the joint space.
+\item \code{individual_rank} A list of integers specifying the rank of the individual
+spaces.
+\item \code{noise_rank} A list of integers specifying the rank of the noise spaces.
+}
 }
 \description{
 The ajive package provides functions to do:
